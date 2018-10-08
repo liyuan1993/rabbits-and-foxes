@@ -78,7 +78,7 @@ upper_quartile_times = np.zeros(runs)
 lower_quartile_times = np.zeros(runs)
 
 for run in range(runs):
-    print('*',end='') 
+    print('.',end='') 
     times = []
     rabbits = []
     foxes = []
@@ -86,7 +86,7 @@ for run in range(runs):
     rabbit = 400
     fox = 200
     
-    while time < 600:
+    while time < end_time:
         times.append(time)
         rabbits.append(rabbit)
         foxes.append(fox)
@@ -99,22 +99,23 @@ for run in range(runs):
             foxes.append(fox)
             break
         step_size = random.expovariate( sum_rates ) 
-        time += step_size #Confusing
-        choice = random.uniform(0, sum_rates)
-        choice -= fox_birth
-        if choice < 0:
+        time += step_size 
+        selected_rate = random.uniform(0, sum_rates)
+        if selected_rate<fox_birth:
             fox += 1
             continue
-        choice -= fox_death
-        if choice < 0:
-            fox -= 1
+        selected_rate-=fox_birth
+        if selected_rate < fox_death:
+            fox -=1
             if fox == 0:
                 dead_fox += 1
-            continue # or break?
-        if choice < rabbit_birth:
+            continue
+        selected_rate-=fox_death
+        if selected_rate < rabbit_birth:
             rabbit += 1
             continue
         rabbit -= 1
+                
     
     times = np.array(times)
     rabbits = np.array(rabbits)
@@ -160,5 +161,3 @@ plt.ylabel('Second peak of foxes')
 plt.xlim(10)
 plt.show()
 print("Second peak of foxes is {} with IQR [{}-{}] ".format(mean_foxes[-1], lower_quartile_foxes[-1], upper_quartile_foxes[-1]))
-
-
